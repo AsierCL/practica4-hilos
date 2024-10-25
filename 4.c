@@ -7,19 +7,26 @@
 #define nHilos 13
 void *generosos(void* args){
     int idHilo = *(int *)args;
-    for(int i = 0; i<1000; i++){
-        printf("Hilo: %d, iteración: %d\n", idHilo, i);
+    for(int i = 0; i<10000000; i++){
+        double x=234182364918273467/12234*i;
+        double y=x/1550*i;
+        double z = x/y;
         if(i%10 == 0){
-           sched_yield(); 
+            sched_yield(); 
         }
     }
+    printf("Hilo generoso terminado, num de hilo=%d\n",idHilo);
 }
 
 void *noGenerosos(void* args){
     int idHilo = *(int *)args;
-    for(int i = 0; i<1000; i++){
-        printf("No soy un hijo generoso: %d\n", idHilo);
+    for(int i = 0; i<10000000; i++){
+        double x=234182364918273467/12234*i;
+        double y=x/1550*i;
+        double z = x/y;
+        //printf("No soy un hijo generoso: %d\n", idHilo);
     }
+    printf("Hilo no generoso terminado, num de hilo=%d\n",idHilo);
 }
 
 int main(int argc, char *argv[]){
