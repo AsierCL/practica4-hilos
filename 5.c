@@ -4,10 +4,23 @@
 #include <unistd.h>
 #include <sched.h>
 
+//
 #define nHilos 16
-
+#define nIteraciones 20
+double sumaTotal = 0;
 void *funcion(void* args){
+
+    int idHilo = *(int *) args;
+    double sumaParcial = 0;
+    for(int i = 0; i < nIteraciones; i++){
+        if((i-1) % nIteraciones == idHilo){
+            sumaParcial +=i;
+        } 
+    }
+    sumaTotal += sumaParcial;
+    printf("Hilo %d, suma parcial = %f\n", idHilo, sumaParcial);
     
+    pthread_exit(NULL);
 }
 
 
