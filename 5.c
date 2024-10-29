@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 #define TOTAL_ITERACIONES 100  // Número total de iteraciones a calcular
-#define NUM_HILOS 4            // Número de hilos a crear
+#define NUM_HILOS 4           // Número de hilos a crear
 #define RANGO 10               // Rango que procesará cada hilo en cada iteración
 
 double sumaTotal = 0;          // Variable global para acumular la suma total
@@ -57,7 +57,13 @@ int main() {
         pthread_join(hilos[i], NULL);
     }
 
+    /* Esto aparece en comentarios ya que así verificamos que el número de iteraciones es correcto
+    double sumaEsperada = (TOTAL_ITERACIONES * (TOTAL_ITERACIONES + 1))/2.0;
+    printf("Suma esperada: %f\n", sumaEsperada);
+    */
+    
     printf("Suma total: %f\n", sumaTotal);
+
 
     // Destruir el mutex
     pthread_mutex_destroy(&mutex);
