@@ -18,8 +18,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define TOTAL_ITERACIONES 100000000000  // Número total de iteraciones a calcular
-#define NUM_HILOS 16           // Número de hilos a crear
+#define TOTAL_ITERACIONES 1000000000  // Número total de iteraciones a calcular
+#define NUM_HILOS 16                // Número de hilos a crear
 #define RANGO 10               // Rango que procesará cada hilo en cada iteración
 
 double sumaParcialHilos[NUM_HILOS] = {0};
@@ -28,10 +28,10 @@ void *funcion(void *args) {
     int idHilo = *(int *)args;  // Obtener el ID único de cada hilo
     double sumaParcial = 0;
     double sumaTotalHilo = 0;
-    int inicio, fin;
+    double inicio, fin;
 
     // Asignación de bloques en rondas cíclicas
-    for (int k = idHilo * RANGO + 1; k <= TOTAL_ITERACIONES; k += NUM_HILOS * RANGO) {
+    for (double k = idHilo * RANGO + 1; k <= TOTAL_ITERACIONES; k += NUM_HILOS * RANGO) {
         inicio = k;
         fin = inicio + RANGO - 1;
 
