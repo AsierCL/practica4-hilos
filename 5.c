@@ -1,17 +1,18 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
-#define TOTAL_ITERACIONES 100  // Número total de iteraciones a calcular
-#define NUM_HILOS 4           // Número de hilos a crear
+#define TOTAL_ITERACIONES 100000000000  // Número total de iteraciones a calcular
+#define NUM_HILOS 16           // Número de hilos a crear
 #define RANGO 10               // Rango que procesará cada hilo en cada iteración
 
-double sumaTotal = 0;          // Variable global para acumular la suma total
-pthread_mutex_t mutex;         // Mutex para proteger acceso a `sumaTotal`
+double sumaParcialHilos[NUM_HILOS] = {0};
 
 void *funcion(void *args) {
     int idHilo = *(int *)args;  // Obtener el ID único de cada hilo
     double sumaParcial = 0;
+    double sumaTotalHilo = 0;
     int inicio, fin;
 
     // Asignación de bloques en rondas cíclicas
@@ -26,25 +27,26 @@ void *funcion(void *args) {
 
         // Calcular la suma parcial para el rango asignado
         sumaParcial = 0;
-        for (int i = inicio; i <= fin; i++) {
-            sumaParcial += i;
+        for (double i = inicio; i <= fin; i+=1.0) {
+            sumaParcial += 1.0/(i*i);
         }
 
-        // Bloquear el acceso a `sumaTotal` para acumular el resultado
-        pthread_mutex_lock(&mutex);
-        sumaTotal += sumaParcial;
-        pthread_mutex_unlock(&mutex);
-
-        printf("Hilo %d, suma parcial de %d a %d = %f\n", idHilo, inicio, fin, sumaParcial);
+       // printf("Hilo %d, suma parcial de %d a %d = %f\n", idHilo, inicio, fin, sumaParcial);
+        sumaTotalHilo += sumaParcial;
     }
+
+    sumaParcialHilos[idHilo] = sumaTotalHilo;
 
     pthread_exit(NULL);
 }
 
 int main() {
+    double sumaParalela = 0;
+    double sumaSecuencial = 0;
+    double diferenciaSumas = 0;
+    double diferenciaValorExacto = 0;
     pthread_t hilos[NUM_HILOS];
     int ids[NUM_HILOS];
-    pthread_mutex_init(&mutex, NULL);
 
     // Crear los hilos
     for (int i = 0; i < NUM_HILOS; i++) {
@@ -62,11 +64,29 @@ int main() {
     printf("Suma esperada: %f\n", sumaEsperada);
     */
     
-    printf("Suma total: %f\n", sumaTotal);
+    for(int i=0;i<NUM_HILOS;i++){
+        sumaParalela += sumaParcialHilos[i];
+        printf("Suma paralela (hilo %d): %f\n",i, sumaParalela);
+    }
+    printf("\n\nSuma paralela: %.18f\n", sumaParalela);
 
 
-    // Destruir el mutex
-    pthread_mutex_destroy(&mutex);
+    //sumaSecuencial = 0;
+    for (double i = 1.0; i <= TOTAL_ITERACIONES; i+=1.0) {
+        sumaSecuencial += 1.0/(i*i);
+    }   
+    printf("\nSuma secuencial: %.18f\n", sumaSecuencial);
+
+    diferenciaSumas = sumaSecuencial - sumaParalela;
+    printf("La diferencia entre la suma secuencia y paralela es: %.18f\n", diferenciaSumas);
+
+    diferenciaValorExacto =  sumaParalela - (M_PI*M_PI)/6;
+    printf("La diferencia entre la suma paralela y el valor exacto es: %.18f\n", diferenciaValorExacto);
+
+
+
+
+
 
     return 0;
 }
